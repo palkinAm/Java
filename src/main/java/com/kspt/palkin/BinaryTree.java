@@ -65,6 +65,7 @@ public class BinaryTree {
     /**
      * @param cur current node for recursive search
      * @param key search key
+     * @return node with the search key
      */
     private Node search(Node cur, int key) {
         if (cur == null || key == cur.value)
@@ -73,6 +74,36 @@ public class BinaryTree {
             return search(cur.left, key);
         else
             return search(cur.right, key);
+    }
+
+    public void add(int key) {
+        Node x = root, y = null;
+        while (x != null) {
+            if (key == x.value)
+                throw new IllegalArgumentException("Duplicate keys");
+            else {
+                y = x;
+                if (key < x.value)
+                    x = x.left;
+                else
+                    x = x.right;
+            }
+        }
+        Node res = new Node(key, y);
+        if (y == null)
+            root = res;
+        else {
+            if (y.value > key)
+                y.left = res;
+            else
+                y.right = res;
+        }
+    }
+
+    public void add(int[] keys) {
+        for (int k : keys) {
+            this.add(k);
+        }
     }
 }
 
