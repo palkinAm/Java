@@ -1,6 +1,8 @@
 package com.kspt.palkin;
 
 
+import java.util.NoSuchElementException;
+
 public class BinaryTree {
 
     static class Node {
@@ -20,6 +22,8 @@ public class BinaryTree {
         Node() {
         }
     }
+
+    enum Searchmode {Node, Parent, Left, Right}
 
     private Node root;
 
@@ -103,6 +107,78 @@ public class BinaryTree {
     public void add(int[] keys) {
         for (int k : keys) {
             this.add(k);
+        }
+    }
+
+    /**
+     * @param key that must be removed
+     */
+    public void remove(int key) {
+        Node cur = search(root, key), parent = cur.parent;
+        if (cur == null) return;
+        //First variant. Cur have only left subnode
+        if (cur.right == null) {
+            if (parent == null) {
+                root = cur.left;
+            } else {
+                if (parent.left == cur) {
+                    parent.left = cur.left;
+                } else {
+                    parent.right = cur.left;
+                }
+            }
+        } else {
+            Node left = cur.right;
+            parent = null;
+            while (left.left != null) {
+                parent = left;
+                left = left.left;
+            }
+            if (parent != null) {
+                parent.left = left.right;
+            } else {
+                cur.right = left.right;
+            }
+            cur.value = left.value;
+        }
+    }
+
+    private String print(Node t) {
+        StringBuilder res = new StringBuilder();
+        if (t != null) {
+            res.append(print(t.left));
+            res.append(t.value).append(" ");
+            res.append(print(t.right));
+        }
+        return res.toString();
+    }
+
+    public String toString() {
+        return print(root).trim();
+    }
+
+    public Node getNode(int key) {
+        return getNode(key, Searchmode.Node);
+    }
+    /**
+     * @param key  key of searching node
+     * @param mode Node - get node, Parent - get parent
+     *             Left - get left subnode, Right - get right subnode
+     * @return searched node
+     */
+    public Node getNode(int key, Searchmode mode) {
+        Node res = search(root, key);
+        if (res == null)
+            throw new NoSuchElementException("This key not found or have not parent ");
+        switch (mode) {
+            case Node:
+                return res;
+            case Parent:
+                return res.parent != null ? res.parent : new Node();
+            case Left:
+                return res.left != null ? res.left : new Node();
+            default:
+                return res.right != null ? res.right : new Node();
         }
     }
 }
